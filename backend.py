@@ -38,38 +38,34 @@ class Manager:
 		Manager.second_page(self)
 		price_unit = self.driver.find_element_by_xpath('//*[@id="dialog_connection_content"]/table/tbody/tr[5]/td[2]')
 		price = price_unit.text.replace('$/MiB', '').strip()
-		print(price)
-		self.driver.close()
+		return price
 		
 #мониторим цену, если она нам не подходит, обновляем страницу и ждём
 	def price_monitor(self):
-		print('price monitor был вызван')
-		Manager.first_page(self)
-		Manager.second_page(self)
 		price = Manager.price_check(self)
 		while True:
 			url_page = self.driver.current_url
-			#проверка, если закончилась сессия длступа 
+			#проверка, если закончилась сессия доступа 
 			if url_page == 'https://m.xchange-box.com/index.php?logout&error=unknown_user#/home.php&ui-state=dialog':
-				Manager.first_page(self)
-				Manager.second_page(self)
+				self.driver.close()
 				price = Manager.price_check(self)
-				print(price)
 			#проверка подходяцей цены
 			if float(price) == 0.45:
 				print('You can connect')
-				self.driver.find_element_by_xpath('//*[@id="dialog_connection_content"]/form/ul/li[2]/div/div/input').click()
+				self.driver.close()
 				playsound('TVORCHI-Feeling OK.mp3')
+				break
 			#в других случаях обновляем страницу
 			else:
 				time.sleep(5)
 				driver.refresh()
 				driver.implicitly_wait(100)
 				feed_page = self.driver.current_url
-				if feed_page == 'https://m.xchange-box.com/home.php':
+				if feed_page == 'https://m.xchange-box.com/home.php#/home.php&ui-state=dialog':
 					manager.second_page
-				price = Manager.price_check(self)
-				print(price)
+				price_unit = self.driver.find_element_by_xpath('//*[@id="dialog_connection_content"]/table/tbody/tr[5]/td[2]')
+				price = price_unit.text.replace('$/MiB', '').strip()
+				
 				
 #задать нового пользователя, может быть только один пользователь
 	def set_user(self, user):
@@ -91,17 +87,6 @@ class Manager:
 		with open('login.json', 'w') as f:
 			f.write(json_data)
 		
-
-#Метод должен давать сигнал, когда пропадает интернет
-	def connection_monitor(self):
-		while True:
-			if self.check_connection() == False:
-				print('You lost connection')
-				playsound('TVORCHI-Feeling OK.mp3')
-				break
-			else:
-				print('You have connection')
-	
 #Метод подключает к интернету
 	def connect(self):
 		Manager.first_page(self)
@@ -109,7 +94,7 @@ class Manager:
 		self.driver.find_element_by_xpath('//*[@id="dialog_connection_content"]/form/ul/li[2]/div/div/input').click()
 		self.driver.close()
 		
-#Метод отключает интрнет
+#Метод отключает интернет
 	def disconnect(self):
 		Manager.first_page(self)
 		Manager.second_page(self)
@@ -124,6 +109,7 @@ class Manager:
 		time = self.driver.find_element_by_xpath('//*[@id="remainingTime"]')
 		time = time.text
 		print(f'У тебя осталось времени - {time}')
+		self.driver.close()
 		
 			
 if __name__ == '__main__':
