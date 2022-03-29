@@ -58,11 +58,11 @@ class Manager:
 			#в других случаях обновляем страницу
 			else:
 				time.sleep(5)
-				driver.refresh()
-				driver.implicitly_wait(100)
+				self.driver.refresh()
+				self.driver.implicitly_wait(100)
 				feed_page = self.driver.current_url
 				if feed_page == 'https://m.xchange-box.com/home.php#/home.php&ui-state=dialog':
-					manager.second_page
+					Manager.second_page(self)
 				price_unit = self.driver.find_element_by_xpath('//*[@id="dialog_connection_content"]/table/tbody/tr[5]/td[2]')
 				price = price_unit.text.replace('$/MiB', '').strip()
 				
