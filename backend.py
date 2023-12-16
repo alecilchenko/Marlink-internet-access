@@ -116,5 +116,5 @@ class Manager:
             '//*[@id="remainingTime"]'
         )
         time_limit = time_limit.text
-        print(f"У тебя осталось времени - {time_limit}")
+        print(f"You have time left - {time_limit}")
         self.driver.close()
